@@ -78,11 +78,6 @@ void setup_TimerA1(uint32_t ticks){
 	// Set up the CCR0
 	TA1CCR0 = ticks;
 
-	// BIT8 is CCR0 OUTPUT
-	P8DIR |= BIT0;
-	P8SEL0 &= ~BIT0;
-	P8SEL1 |= BIT0;
-
 	// Enable Interrupts
 	NVIC_ISER0 = 1 << ((INT_TA1_N - 16) & 31);	//	Allow Enabling Interrupts
 
@@ -160,6 +155,9 @@ void error(void)
 void TimerA1_ISR(){
 	//	Control the Switches to generate 60Hz Waveform
 	//	Note: LED means negative state
+
+	// Clear the interrupt Flag
+	TA1IV = 0;
 
 	//	Deadtime - Prevents Shorts
 	P4OUT = 0x00;	// Turn off all Switches
