@@ -14,7 +14,7 @@
 #define FLCTL_BANK1_RDCTL_WAIT__2    (2 << 12)
 
 #define m_freq 48000000
-#define dead_time_switching 4
+unsigned int dead_time_switching = 4;
 
 /*
  * Initialization Functions
@@ -144,6 +144,15 @@ void error(void)
 }
 
 /*
+ * Add a 3 Cycle OverHead
+ */
+static void __inline__ delay_cycles(register unsigned int n){
+	while(n--){
+		__delay_cycles(1);
+	}
+}
+
+/*
  * Note: On PORT4 the following is the switch order
  * 1   0
  *   L
@@ -161,7 +170,7 @@ void TimerA1_ISR(){
 
 	//	Deadtime - Prevents Shorts
 	P4OUT = 0x00;	// Turn off all Switches
-	__delay_cycles(dead_time_switching);
+	delay_cycles(dead_time_switching);
 
 	//	Current State
 	if(P1OUT & BIT0)
